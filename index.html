@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de méritos · Ficha 02060410 · Guardia Civil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#FFFFFF; --tinta:#14201A; --apagado:#5D6B61;
+  --linea:#E2E7E3; --linea-suave:#EDF0ED; --campo:#FFFFFF;
+  --verde-texto:#0D5134; --verde-cl:#2E7D55; --oro:#8A6A10; --rojo:#8C2F2A;
+  --cab-bg:#0D5134; --boton:#0D5134; --boton-hover:#0A4029; --sec-hover:#E2EBE4;
+  --med-suma:#2E7D55; --med-pista:#E3EAE5; --med-sobra:#B4BDB6; --med-tope:#B8891A;
+  --radio:6px; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --papel:#0F1612; --tinta:#E3EBE5; --apagado:#9AAAA0;
+    --linea:#243029; --linea-suave:#1C2620; --campo:#101814;
+    --verde-texto:#86C9A2; --verde-cl:#3D9A6A; --oro:#E2BC45; --rojo:#E58A80;
+    --cab-bg:#0B3B27; --boton:#1F7A4F; --boton-hover:#258F5D; --sec-hover:#22302A;
+    --med-suma:#3D9A6A; --med-pista:#26352C; --med-sobra:#4A5850; --med-tope:#E2BC45;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --papel:#0F1612; --tinta:#E3EBE5; --apagado:#9AAAA0;
+  --linea:#243029; --linea-suave:#1C2620; --campo:#101814;
+  --verde-texto:#86C9A2; --verde-cl:#3D9A6A; --oro:#E2BC45; --rojo:#E58A80;
+  --cab-bg:#0B3B27; --boton:#1F7A4F; --boton-hover:#258F5D; --sec-hover:#22302A;
+  --med-suma:#3D9A6A; --med-pista:#26352C; --med-sobra:#4A5850; --med-tope:#E2BC45;
+  color-scheme:dark;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--papel);color:var(--tinta);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.5;font-feature-settings:"tnum" 1;
+}
+h1,h2,h3,.cifra{font-family:Archivo,"IBM Plex Sans",system-ui,sans-serif;letter-spacing:-.015em}
+input,select,button{font:inherit;color:inherit}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+
+/* ---------- cabecera fija ---------- */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--cab-bg);color:#EAF1EC}
+header .wrap{padding-bottom:14px}
+.cab{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;padding:14px 0 12px}
+.ident h1{margin:0;font-size:19px;font-weight:700;color:#fff}
+.ident p{margin:2px 0 0;font-size:13px;color:#A9C7B5}
+.marcador{margin-left:auto;text-align:right;line-height:1}
+.marcador .cifra{font-size:40px;font-weight:700;color:#fff;display:block}
+.marcador small{font-size:12px;color:#A9C7B5;white-space:nowrap}
+
+/* ---------- barra de baremo segmentada ---------- */
+.baremo{display:flex;gap:2px;height:6px}
+.seg{position:relative;background:rgba(255,255,255,.13);border-radius:3px;overflow:hidden;min-width:0;cursor:default}
+.seg i{position:absolute;inset:0 auto 0 0;width:0;background:#3D9A6A;transition:width .18s ease;display:block}
+.seg.gen i{background:#7FB394}
+.seg.lleno i{background:#E0B93C}
+.seg b,.leyenda{display:none}
+
+/* ---------- secciones ---------- */
+main.wrap{padding-top:6px}
+
+section{border-bottom:1px solid var(--linea)}
+.sh{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:2px 12px;align-items:center;padding:18px 0;cursor:pointer}
+.sh>h2{grid-area:1/1;margin:0;font-size:16px;font-weight:600;line-height:1.3}
+.sh>.art{grid-area:2/1;justify-self:start;font-size:12px;color:var(--apagado);white-space:nowrap}
+.sh>.res{grid-area:1/2/3/3;text-align:right;line-height:1.25}
+.sh .res span{font-size:11.5px;color:var(--apagado);display:block}
+.sh .res .cifra{font-size:20px;font-weight:600;color:var(--tinta)}
+.tope{color:var(--oro)!important}
+.sb{padding:0 0 20px}
+
+/* ---------- medidor de cada mérito ----------
+   La barra se ve de 4 px; el borde transparente la deja en 10 px para acertar con el ratón. */
+.sh>.med{grid-area:3/1/4/4;min-width:0;margin-top:8px}
+.pista{display:flex;align-items:center;gap:2px}
+.pz{flex:0 1 0;min-width:2px;height:10px;border-block:3px solid transparent;background:var(--med-suma);background-clip:padding-box;transform-origin:left}
+.pista i:first-of-type{border-top-left-radius:2px 5px;border-bottom-left-radius:2px 5px}
+.pista i:last-of-type{border-top-right-radius:2px 5px;border-bottom-right-radius:2px 5px}
+.pz.resto{background-color:var(--med-pista);min-width:0}
+.pz.sobra{background-color:var(--med-sobra)}
+.med.lleno .pz:not(.sobra){background-color:var(--med-tope)}
+.pz.nuevo{animation:entra .25s ease}
+@keyframes entra{from{transform:scaleX(0)}}
+.marca{display:none;flex:none;width:1.5px;height:10px;background:var(--tinta)}
+.pista:has(.sobra) .marca{display:block}
+.pie{margin:3px 0 0;font-size:11.5px;color:var(--apagado)}
+.nota{font-size:12.5px;color:var(--apagado);margin:0 0 12px;max-width:70ch}
+
+/* ---------- detalle técnico («Cómo se calcula») ---------- */
+details.tec{margin-top:12px;font-size:12.5px;color:var(--apagado)}
+details.tec summary{cursor:pointer;width:fit-content;color:var(--verde-texto);font-weight:500}
+details.tec p{margin:8px 0 0;max-width:70ch;font-size:12.5px}
+details.tec ul{margin:8px 0 0;padding-left:18px;max-width:70ch}
+details.tec ul:empty{display:none}
+details.tec li strong{color:var(--tinta)}
+
+/* ---------- secciones plegables ---------- */
+.sh::after{content:"";grid-area:1/3/3/4;width:8px;height:8px;margin:0 3px;
+  border-right:1.5px solid var(--apagado);border-bottom:1.5px solid var(--apagado);
+  transform:translateY(2px) rotate(-135deg);transition:transform .18s ease}
+.plegado .sh::after{transform:translateY(-3px) rotate(45deg)}
+.plegar{background:none;color:inherit;border:0;border-radius:0;padding:0;font-weight:inherit;letter-spacing:inherit;text-align:left}
+.plegar:hover{background:none}
+.plegado .sb{display:none}
+
+/* ---------- listas de méritos ---------- */
+ul.items{list-style:none;margin:0;padding:0}
+ul.items li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--linea-suave)}
+ul.items li:last-child{border-bottom:0}
+ul.items input[type=checkbox]{margin:3px 0 0;width:16px;height:16px;accent-color:var(--verde-texto);flex:none}
+.nom{flex:1 1 auto;min-width:0}
+.nom label{cursor:pointer;display:block}
+.cod{font-size:11.5px;color:var(--apagado);margin-top:1px;word-break:break-word}
+.val{flex:none;text-align:right;line-height:1.25;white-space:nowrap;padding-left:6px}
+.val b{font-family:Archivo,sans-serif;font-size:14px;font-weight:600}
+.val span{display:block;font-size:11px;color:var(--apagado)}
+
+/* ---------- campos ---------- */
+.campo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid var(--linea-suave)}
+.campo:last-of-type{border-bottom:0}
+.campo>label,.campo>.rot{flex:1 1 220px;font-size:14px}
+.campo>label.fecha{flex:none;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--apagado)}
+.campo .ayuda{display:block;font-size:11.5px;color:var(--apagado)}
+input[type=number],input[type=date],select{
+  border:1px solid var(--linea);background:var(--campo);color:var(--tinta);
+  padding:6px 8px;border-radius:var(--radio);min-width:0}
+input[type=number]{width:110px;text-align:right}
+input[type=date]{width:150px}
+select{max-width:180px}
+input:focus-visible,select:focus-visible,button:focus-visible,input[type=checkbox]:focus-visible{
+  outline:2px solid var(--verde-cl);outline-offset:2px}
+.mini{font-size:11.5px;color:var(--apagado)}
+
+/* ---------- idiomas ---------- */
+.idioma{padding:12px 0;border-bottom:1px solid var(--linea-suave)}
+.idioma:first-child{padding-top:2px}
+.idioma:last-child{border-bottom:0;padding-bottom:0}
+.idi-cab{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.idi-nom strong{font-weight:600;font-size:15px;margin-right:8px}
+.idi-campos{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end}
+fieldset.slp{border:0;margin:0;padding:0;min-width:0}
+fieldset.slp legend{padding:0;margin:0 0 4px;font-size:11.5px;color:var(--apagado)}
+.dz{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end}
+.dz label,.mcerl{display:flex;flex-direction:column;gap:3px;font-size:12px;line-height:1.25;color:var(--apagado);min-width:0}
+.dz select{width:100%;max-width:none}
+.mcerl{padding-left:14px;border-left:1px solid var(--linea-suave)}
+.mcerl select{min-width:120px}
+.idi-res{margin:8px 0 0;font-size:12.5px;color:var(--apagado);max-width:72ch}
+.idi-res strong{color:var(--tinta);font-weight:600}
+
+/* ---------- circunstancias ---------- */
+.circ .campo>label{flex:1 1 260px}
+#circNeg{color:var(--rojo)}
+
+/* ---------- pie ---------- */
+.acciones{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:22px}
+button{background:var(--boton);color:#fff;border:0;padding:9px 16px;border-radius:var(--radio);cursor:pointer;font-weight:500}
+button.sec{background:transparent;color:var(--tinta);border:1px solid var(--linea)}
+button:hover{background:var(--boton-hover)}
+button.sec:hover{background:var(--sec-hover)}
+.estado{font-size:12px;color:var(--apagado)}
+.aviso{font-size:12px;color:var(--apagado);margin-top:18px;max-width:74ch}
+
+@media (max-width:700px){
+  .cab{flex-wrap:nowrap;align-items:center;gap:12px;padding:10px 0 8px}
+  .ident h1{font-size:14px;line-height:1.3}
+  .ident p{display:none}
+  .marcador .cifra{font-size:28px}
+  header .wrap{padding-bottom:10px}
+  .wrap{padding:0 16px}
+  main.wrap{padding-top:2px}
+  .sb{padding:0 0 18px}
+  .sh{gap:2px 10px;padding:14px 0}
+  .sh>h2{font-size:15px}
+  .sh>.med{grid-area:3/1;margin-top:6px}
+  .sh>.res{grid-area:1/2/4/3;min-width:92px;max-width:104px}
+  .sh::after{grid-area:1/3/4/4}
+  .sh .res .cifra{font-size:17px}
+  input,select{font-size:16px}
+  .idi-campos{grid-template-columns:1fr;gap:10px}
+  .dz{gap:6px}
+  .dz label{font-size:11px}
+  .mcerl{padding-left:0;border-left:0;flex-direction:row;align-items:center;justify-content:space-between;font-size:12px}
+  .mcerl select{width:auto;min-width:130px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="cab">
+      <div class="ident">
+        <h1>Ficha 02060410 &middot; Especialista Fiscal y Fronteras</h1>
+        <p>Empleo: Guardia Civil &middot; OG 12/2021 consolidada &middot; Requisito: FFB&#8209;Fiscal Básico</p>
+      </div>
+      <div class="marcador">
+        <span class="cifra" id="total">0,00</span>
+        <small>puntos sobre 100</small>
+      </div>
+    </div>
+    <div class="baremo" id="baremo"></div>
+    <div class="leyenda"><span>Méritos generales &middot; 25 ptos</span><span>Méritos específicos &middot; 75 ptos</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 21 a -->
+  <section id="sec-a21" class="plegado">
+    <div class="sh"><span class="art">Art. 21 a)</span><h2>Antigüedad en el empleo</h2>
+      <div class="res"><span class="cifra" id="p21a">0,00</span><span>de 10 puntos</span></div>
+      <div class="med" id="med_a21"></div></div>
+    <div class="sb">
+      <p class="nota">Suma por cada día completado desde la fecha de efectividad del empleo. Cada año son <strong>0,310717</strong> puntos y el máximo de 10 llega a los 32 años y 2 meses.</p>
+      <div class="campo">
+        <label for="d21a">Días acreditados</label>
+        <input type="number" id="d21a" min="0" step="1" value="0">
+      </div>
+      <div class="campo">
+        <span class="rot">O calcúlalos con dos fechas
+          <span class="ayuda">Desde la fecha de efectividad del empleo hasta el día en que termina el plazo de solicitud de la convocatoria.</span></span>
+        <label class="fecha">desde <input type="date" data-dias="d21a" aria-label="Fecha de efectividad en el empleo"></label>
+        <label class="fecha">hasta el fin del plazo <input type="date" data-fin aria-label="Fecha de finalización del plazo de solicitud"></label>
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>1 punto absoluto por día completado desde la fecha de efectividad del empleo. Baremo 10; umbral 11.747 días. Cada día vale <strong>0,000851</strong> puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 21 b -->
+  <section id="sec-b21" class="plegado">
+    <div class="sh"><span class="art">Art. 21 b)</span><h2>Recompensas y felicitaciones</h2>
+      <div class="res"><span class="cifra" id="p21b">0,00</span><span>de 4 puntos</span></div>
+      <div class="med" id="med_b21"></div></div>
+    <div class="sb">
+      <p class="nota">Introduce la puntuación total de condecoraciones y felicitaciones que tengas anotada en tu historial. Cada punto de esa puntuación son <strong>0,195121</strong> puntos aquí, hasta el máximo de 4.</p>
+      <div class="campo">
+        <label for="p21bIn">Puntuación de condecoraciones y felicitaciones</label>
+        <input type="number" id="p21bIn" min="0" step="0.01" value="0">
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>Se valoran con la puntuación de la normativa de evaluación para el ascenso (anexo II de la OG, que remite a esa norma: los valores concretos no figuran en este documento). Baremo 4; umbral 20,5 puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 21 c -->
+  <section id="sec-c21" class="plegado">
+    <div class="sh"><span class="art">Art. 21 c)</span><h2>Nivel académico</h2>
+      <div class="res"><span class="cifra" id="p21c">0,00</span><span>de 5 puntos</span></div>
+      <div class="med" id="med_c21"></div></div>
+    <div class="sb">
+      <div class="campo">
+        <label for="n21c">Nivel MECES acreditado</label>
+        <select id="n21c">
+          <option value="0">Sin nivel valorable</option>
+          <option value="1.25">Nivel 2 — Grado: 4,166666 puntos</option>
+          <option value="1.5">Nivel 3 — Máster: 5 puntos</option>
+          <option value="2">Nivel 4 — Doctor: 5 puntos</option>
+        </select>
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>Categoría de cabos y guardias (anexo III): MECES 2 = 1,25; MECES 3 = 1,5; MECES 4 = 2 puntos absolutos. Baremo 5; umbral 1,5.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 21 d -->
+  <section id="sec-d21" class="plegado">
+    <div class="sh"><span class="art">Art. 21 d)</span><h2>Informes personales (IPECGUCI)</h2>
+      <div class="res"><span class="cifra" id="p21d">0,00</span><span>de 6 puntos</span></div>
+      <div class="med" id="med_d21"></div></div>
+    <div class="sb">
+      <p class="nota">Media aritmética de los tres últimos informes de carácter ordinario y alcance periódico. Cada décima de media son <strong>0,068143</strong> puntos y con una media de 8,805 o superior se alcanza el máximo de 6.</p>
+      <div class="campo">
+        <label for="m21d">Media de los IPECGUCI considerados</label>
+        <input type="number" id="m21d" min="0" max="10" step="0.001" value="0">
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>La puntuación absoluta es la propia media. Baremo 6; umbral 8,805.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 a -->
+  <section id="sec-a22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 a)</span><h2>Aptitudes y especialidades</h2>
+      <div class="res"><span class="cifra" id="p22a">0,00</span><span>de 25 puntos</span></div>
+      <div class="med" id="med_a22"></div></div>
+    <div class="sb">
+      <ul class="items" id="lista22a"></ul>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>Se suman los valores que la ficha da a cada curso marcado (el que aparece junto a su código). Los grupos con varios códigos son denominaciones equivalentes de la misma aptitud y cuentan una vez. Baremo 25; umbral 7,6. Cada punto de valor son <strong>3,289473</strong> puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 b -->
+  <section id="sec-b22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 b)</span><h2>Idiomas extranjeros</h2>
+      <div class="res"><span class="cifra" id="p22b">0,00</span><span>de 20 puntos</span></div>
+      <div class="med" id="med_b22"></div></div>
+    <div class="sb">
+      <p class="nota">Elige el nivel de cada destreza de tu perfil SLP y, si lo tienes, tu título MCERL (puntúa desde B2). En cada idioma cuenta lo que más puntúe de los dos. Cada idioma muestra los puntos que da por sí solo; entre todos se suman hasta el máximo de 20. No cuentan los perfiles obtenidos en la enseñanza de formación.</p>
+      <div id="lista22b"></div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>SLP: suma de las cuatro destrezas STANAG 6001 (niveles 0 a 5; el «+» vale 0,5). MCERL: B2 = 10, C1 = 14, C2 = 18; por debajo de B2 no puntúa. En cada idioma cuenta el mayor de los dos, multiplicado por el coeficiente de la ficha: inglés y francés 1,00; árabe 0,40; portugués 0,30; alemán, ruso e italiano 0,10. Después se suman los idiomas (art. 8.b). Baremo 20; umbral 10.</p>
+        <ul id="tecIdiomas"></ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 c -->
+  <section id="sec-c22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 c)</span><h2>Títulos oficiales del sistema educativo</h2>
+      <div class="res"><span class="cifra" id="p22c">0,00</span><span>de 16 puntos</span></div>
+      <div class="med" id="med_c22"></div></div>
+    <div class="sb">
+      <ul class="items" id="lista22c"></ul>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>Se suman los valores que la ficha da a cada título marcado: 80 o 60 puntos absolutos (operador de equipos de rayos X, 2). Baremo 16; umbral 140. Cada punto de valor son <strong>0,114285</strong> puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 d -->
+  <section id="sec-d22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 d)</span><h2>Antigüedad en destinos de la especialidad</h2>
+      <div class="res"><span class="cifra" id="p22d">0,00</span><span>de 10 puntos</span></div>
+      <div class="med" id="med_d22"></div></div>
+    <div class="sb">
+      <p class="nota">Suma por cada día en los puestos de la lista de la ficha (destacamentos y secciones de seguridad de aeropuerto y puerto, con función rural, seguridad ciudadana o especialista de seguridad ciudadana; y funciones de fiscal y fronteras o fiscal). Cada año son <strong>0,588709</strong> puntos y el máximo de 10 llega a los 17 años, aproximadamente.</p>
+      <div class="campo">
+        <label for="d22d">Días acreditados</label>
+        <input type="number" id="d22d" min="0" step="1" value="0">
+      </div>
+      <div class="campo">
+        <span class="rot">O calcúlalos con dos fechas
+          <span class="ayuda">Desde que empezaste en esos destinos hasta el día en que termina el plazo de solicitud de la convocatoria.</span></span>
+        <label class="fecha">desde <input type="date" data-dias="d22d" aria-label="Fecha de inicio en destinos de la especialidad"></label>
+        <label class="fecha">hasta el fin del plazo <input type="date" data-fin aria-label="Fecha de finalización del plazo de solicitud"></label>
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>1 punto absoluto por día. Baremo 10; umbral 6.200 días. Cada día vale <strong>0,001612</strong> puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 e -->
+  <section id="sec-e22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 e)</span><h2>Antigüedad en destinos con cometidos similares</h2>
+      <div class="res"><span class="cifra" id="p22e">0,00</span><span>de 4 puntos</span></div>
+      <div class="med" id="med_e22"></div></div>
+    <div class="sb">
+      <p class="nota">Suma por cada día en los puestos de mando o plana mayor de la lista de la ficha (jefaturas y unidades fiscales y de fronteras, CECOR de vigilancia marítima, centros de coordinación, compañías y destacamentos fiscales y de seguridad de puerto y aeropuerto). Cada año son <strong>1,033094</strong> puntos y el máximo de 4 llega algo antes de los 4 años.</p>
+      <div class="campo">
+        <label for="d22e">Días acreditados</label>
+        <input type="number" id="d22e" min="0" step="1" value="0">
+      </div>
+      <div class="campo">
+        <span class="rot">O calcúlalos con dos fechas
+          <span class="ayuda">Desde que empezaste en esos destinos hasta el día en que termina el plazo de solicitud de la convocatoria.</span></span>
+        <label class="fecha">desde <input type="date" data-dias="d22e" aria-label="Fecha de inicio en destinos con cometidos similares"></label>
+        <label class="fecha">hasta el fin del plazo <input type="date" data-fin aria-label="Fecha de finalización del plazo de solicitud"></label>
+      </div>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>1 punto absoluto por día. Baremo 4; umbral 1.413,23 días, así que el máximo se alcanza al completar 1.414. Cada día vale <strong>0,002830</strong> puntos.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 22 f -->
+  <section id="sec-f22" class="plegado">
+    <div class="sh"><span class="art">Art. 22 f)</span><h2>Deportista de alto nivel o de élite</h2>
+      <div class="res"><span class="cifra">0,00</span><span>no puntúa en esta ficha</span></div></div>
+    <div class="sb">
+      <p class="nota">En esta ficha, la condición de deportista de alto nivel o de élite no da puntos.</p>
+      <details class="tec">
+        <summary>Cómo se calcula</summary>
+        <p>La ficha asigna a este mérito baremo 0,0 y umbral 0,000.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- circunstancias -->
+  <section class="circ plegado" id="sec-circ">
+    <div class="sh"><span class="art">Art. 23 OM</span><h2>Circunstancias personales</h2>
+      <div class="res"><span class="cifra" id="pcirc">0,00</span><span>aparte de los 100</span></div></div>
+    <div class="sb">
+      <p class="nota">Se suman o restan después de ponderar los méritos profesionales, por lo que el resultado final puede pasar de 100. La lengua cooficial se puntúa según el anexo IV de la OG; el resto de circunstancias (agrupamiento familiar y la puntuación negativa) se regulan en el artículo 23 de la Orden INT/26/2021, que no viene en este documento: introdúcelas a mano si te aplican.</p>
+      <div class="campo">
+        <label for="cooficial">Lengua cooficial acreditada (anexo IV)</label>
+        <select id="cooficial">
+          <option value="0">Ninguna</option>
+          <option value="1">Nivel elemental / intermedio bajo — 1 punto</option>
+          <option value="2">Nivel intermedio — 2 puntos</option>
+          <option value="4">Nivel superior / suficiencia — 4 puntos</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="circPos">Otras circunstancias que suman</label>
+        <input type="number" id="circPos" min="0" step="0.01" value="0">
+      </div>
+      <div class="campo">
+        <label for="circNeg">Circunstancias que restan</label>
+        <input type="number" id="circNeg" min="0" step="0.01" value="0">
+      </div>
+    </div>
+  </section>
+
+  <div class="acciones">
+    <button type="button" id="reset" class="sec">Empezar de cero</button>
+    <span class="estado" id="estado" role="status"></span>
+  </div>
+
+  <p class="aviso">Herramienta de cálculo no oficial, elaborada a partir de la ficha 02060410 de la OG 12/2021 en su versión consolidada de 19 de mayo de 2026 (páginas 293 a 297). Los cursos con varios códigos son denominaciones equivalentes de una misma aptitud y solo puntúan una vez. El artículo 8.a).4º permite que una actividad formativa se valore al 100, 75, 50, 25 o 10 % de su valor según su carga lectiva; esta calculadora aplica siempre el valor íntegro de la ficha. Lo que introduces se guarda solo en este navegador. Comprueba siempre tu historial profesional y la resolución de la convocatoria.</p>
+
+</main>
+
+<script>
+"use strict";
+
+const BAREMO = {a21:10, b21:4, c21:5, d21:6, a22:25, b22:20, c22:16, d22:10, e22:4};
+const UMBRAL = {a21:11747, b21:20.5, c21:1.5, d21:8.805, a22:7.6, b22:10, c22:140, d22:6200, e22:1413.23};
+
+const APTITUDES = [
+  {id:"EF045", n:"Administradores SIGO", v:10.60},
+  {id:"PJB", n:"Policía Judicial — básico", v:9.90, c:"EF001 · EF002 · EF016 · EF064 · XG015 · XG016 · XG017"},
+  {id:"INFB", n:"Información — básico", v:7.65, c:"EF007 · EF009 · EF011 · EF058 · EF069"},
+  {id:"X6215", n:"Competencias digitales para la investigación", v:7.50},
+  {id:"XO081", n:"Competencias digitales básicas del personal profesional de la Guardia Civil", v:7.50},
+  {id:"NRBQ3", n:"NRBQ — nivel III", v:6.60, c:"EL008 · X1016"},
+  {id:"EF046", n:"Análisis de riesgos en fronteras", v:6.00},
+  {id:"XW005", n:"Seminario de vigilancia de fronteras y lucha contra la inmigración irregular", v:4.20},
+  {id:"XW004", n:"Supervisor de instalaciones radiactivas", v:3.80},
+  {id:"NRBQ2", n:"NRBQ — nivel II", v:3.75, c:"EL006 · EL011"},
+  {id:"RADIO", n:"Manejo y operación de equipos e instalaciones radiactivas", v:3.30, c:"TW002 · XW003"},
+  {id:"TF038", n:"Curso Pegaso", v:3.25},
+  {id:"LFACGC", n:"Avanzado de legislación fiscal y aduanera para cabos y guardias", v:3.10, c:"EF059 · TW000"},
+  {id:"XW024", n:"Jornadas de análisis e investigación fiscal y de fronteras UDAIFF", v:3.00},
+  {id:"EL005", n:"Especialista NBQ nivel I", v:2.50},
+  {id:"Z5139", n:"Jornadas SEPRONA para unidades de fiscal y fronteras", v:2.30},
+  {id:"XO068", n:"Operador de equipos de inspección de rayos X", v:2.00},
+  {id:"BRF", n:"Básico de resguardo fiscal", v:1.80, c:"EF056 · TF033 · TF034"},
+  {id:"Z6055", n:"Piloto a distancia STS", v:1.75},
+  {id:"XF077", n:"Investigación financiera", v:1.63},
+  {id:"XF004", n:"Elaboración de información", v:1.60},
+  {id:"XW018", n:"Jornadas sobre tráfico ilícito de vehículos y nuevos sistemas", v:1.60},
+  {id:"TF037", n:"Análisis de conductas anómalas para personal de unidades fiscales", v:1.50},
+  {id:"XW026", n:"Jornadas de ampliación de conocimientos para personal de PAFIF y destacamentos", v:1.40},
+  {id:"XW022", n:"Jornadas sobre propiedad industrial e intelectual para PAFIF y UDAIFF", v:1.15},
+  {id:"ADM", n:"Jornadas de control aduanero de armas de destrucción masiva y material", v:1.15, c:"TF035 · XW023"}
+];
+
+const TITULOS = [
+  {id:"GD011", n:"Graduado en Comercio", v:80, c:"GD011"},
+  {id:"T_INF", n:"Grados de Ingeniería Informática", v:80, c:"ET008 · SJ321"},
+  {id:"T_CYF", n:"Grados en Contabilidad y Finanzas", v:80, c:"GRU21"},
+  {id:"T_IG", n:"Grados en Informática de Gestión", v:80, c:"ET037 · ET066 · GRU38 · SJ552"},
+  {id:"T_IGS", n:"Grados en Informática de Gestión y Sistemas", v:80, c:"ET078 · GRU41 · GRU69 · GRU72 · GRU73"},
+  {id:"T_IIS", n:"Grados en Ingeniería Informática de Sistemas", v:80, c:"GRU70"},
+  {id:"T_TEL", n:"Grados en Ingeniería de Telecomunicaciones", v:80, c:"ET007 · GRU55 · GRU56 · GRU57 · GRU87"},
+  {id:"T_ITI", n:"Ingenierías técnicas y diplomaturas en Informática de Sistemas", v:80, c:"ET038"},
+  {id:"T_ECO", n:"Licenciaturas y grados en Ciencias Económicas o Empresariales", v:80, c:"GRU17 · GRU24 · GRU98 · GU039 · SJ001 · SJ006 · SJ062 · SJ314"},
+  {id:"T_CRI", n:"Licenciaturas y grados en Criminología", v:80, c:"GRU15 · GRU23 · GU002 · GU059 · SJ104 · SJ136 · SJ138"},
+  {id:"T_DER", n:"Licenciaturas y grados en Derecho", v:80, c:"GRU05 · SJ005"},
+  {id:"T_EMP", n:"Licenciaturas y grados en Empresariales", v:80, c:"GRA07 · GRU18 · GU064 · SJ014 · SJ059"},
+  {id:"T_GAP", n:"Licenciaturas y grados en Gestión y Administración Pública", v:80, c:"GRU90 · GU022 · SJ016 · SJ325"},
+  {id:"SJ462", n:"Piloto de transporte de línea aérea JAR-FCL", v:60, c:"SJ462"},
+  {id:"T_DIR", n:"Títulos de Director de Seguridad", v:60, c:"00053 · 00750"},
+  {id:"T_PRL", n:"Títulos de nivel superior en Prevención de Riesgos Laborales", v:60, c:"MU084 · MU243 · SJ241 · SJ301 · SJ344 · TCS06 · TCS11 · TCS12 · TCS13 · TCS20"},
+  {id:"T_COM", n:"Títulos técnicos en Comercio Internacional", v:60, c:"TCE72 · TCS64"},
+  {id:"00117", n:"Operador de equipos de inspección por rayos X", v:2, c:"00117"}
+];
+
+const IDIOMAS = [
+  {id:"IN000", n:"Inglés", k:1.00},
+  {id:"FR000", n:"Francés", k:1.00},
+  {id:"AR000", n:"Árabe", k:0.40},
+  {id:"PO000", n:"Portugués", k:0.30},
+  {id:"AL000", n:"Alemán", k:0.10},
+  {id:"RU000", n:"Ruso", k:0.10},
+  {id:"IT000", n:"Italiano", k:0.10}
+];
+
+/* Niveles STANAG 6001 por destreza: el «+» cuenta medio punto (art. 8.b.4º) */
+const NIVELES = [["0",0],["0+",0.5],["1",1],["1+",1.5],["2",2],["2+",2.5],["3",3],["3+",3.5],["4",4],["4+",4.5],["5",5]];
+const DESTREZAS = ["Comprensión auditiva", "Expresión oral", "Comprensión lectora", "Expresión escrita"];
+/* Tabla MCERL del art. 8.b.5º */
+const MCERL = [["Ninguno",0],["B2 (10)",10],["C1 (14)",14],["C2 (18)",18]];
+const MCERL_NOMBRE = {10:"B2", 14:"C1", 18:"C2"};
+
+const SEGMENTOS = [
+  {k:"a21", t:"21a", gen:true}, {k:"b21", t:"21b", gen:true},
+  {k:"c21", t:"21c", gen:true}, {k:"d21", t:"21d", gen:true},
+  {k:"a22", t:"22a"}, {k:"b22", t:"22b"}, {k:"c22", t:"22c"},
+  {k:"d22", t:"22d"}, {k:"e22", t:"22e"}
+];
+
+const CAMPOS = {d21a:"d21a", p21bIn:"p21b", n21c:"n21c", m21d:"m21d",
+                d22d:"d22d", d22e:"d22e", cooficial:"cooficial", circPos:"circPos", circNeg:"circNeg"};
+const CLAVE = "ficha02060410-gc-v2";
+
+function estadoInicial(){
+  return {d21a:0, p21b:0, n21c:0, m21d:0, apt:{}, idi:{}, tit:{}, d22d:0, d22e:0,
+          cooficial:0, circPos:0, circNeg:0, fechaFin:""};
+}
+const estado = estadoInicial();
+
+/* Los decimales no se redondean: se muestran los que haya y se cortan en el sexto.
+   toFixed(10) solo limpia el ruido binario de la coma flotante (16,399999999999995 es 16,4). */
+const DECIMALES = 6;
+function num(n, min=2){
+  const [ent, dec] = Math.abs(n).toFixed(10).split(".");
+  const d = dec.slice(0, DECIMALES).replace(/0+$/, "").padEnd(min, "0");
+  const txt = Number(ent).toLocaleString("es-ES", {useGrouping:"always"}) + (d ? "," + d : "");
+  return n < 0 && /[1-9]/.test(txt) ? "-" + txt : txt;
+}
+const corto = n => num(n, 0);
+const $ = s => document.querySelector(s);
+
+function puntos(abs, umbral, baremo){
+  if(!umbral) return {pts:0, tope:false};
+  return {pts:(Math.min(abs, umbral) / umbral) * baremo, tope:abs >= umbral};
+}
+function solo(v, umbral, baremo){ return Math.min(v, umbral) / umbral * baremo; }
+
+/* ---------- construir la interfaz ---------- */
+function pintarBarra(){
+  $("#baremo").innerHTML = SEGMENTOS.map(g =>
+    `<div class="seg vacio ${g.gen ? "gen" : ""}" id="seg_${g.k}" style="flex:${BAREMO[g.k]} 1 0">
+       <i></i><b>${g.t}</b></div>`).join("");
+}
+
+function pintarAptitudes(){
+  $("#lista22a").innerHTML = APTITUDES.map(a => `<li>
+      <input type="checkbox" id="apt_${a.id}" data-apt="${a.id}">
+      <span class="nom"><label for="apt_${a.id}">${a.n}</label>
+        <span class="cod">${a.c || a.id} · valor en la ficha ${num(a.v)}</span></span>
+      <span class="val"><b>${num(solo(a.v, UMBRAL.a22, BAREMO.a22))}</b><span>puntos</span></span>
+    </li>`).join("");
+}
+
+function pintarTitulos(){
+  $("#lista22c").innerHTML = TITULOS.map(t => `<li>
+      <input type="checkbox" id="tit_${t.id}" data-tit="${t.id}">
+      <span class="nom"><label for="tit_${t.id}">${t.n}</label>
+        <span class="cod">${t.c} · valor en la ficha ${num(t.v)}</span></span>
+      <span class="val"><b>${num(solo(t.v, UMBRAL.c22, BAREMO.c22))}</b><span>puntos</span></span>
+    </li>`).join("");
+}
+
+function pintarIdiomas(){
+  const optsNivel = NIVELES.map(([t, v]) => `<option value="${v}">${t}</option>`).join("");
+  const optsMcerl = MCERL.map(([t, v]) => `<option value="${v}">${t}</option>`).join("");
+  $("#lista22b").innerHTML = IDIOMAS.map(i => `
+    <div class="idioma">
+      <div class="idi-cab">
+        <div class="idi-nom"><strong>${i.n}</strong><span class="mini">puntúa al ${corto(i.k * 100)} %</span></div>
+        <div class="val"><b id="pt_${i.id}">0,00</b><span>puntos</span></div>
+      </div>
+      <div class="idi-campos">
+        <fieldset class="slp">
+          <legend>Perfil SLP: nivel de cada destreza</legend>
+          <div class="dz">
+            ${DESTREZAS.map((d, n) => `<label>${d}
+              <select id="dz_${i.id}_${n}" data-idi="${i.id}" data-dz="${n}">${optsNivel}</select></label>`).join("")}
+          </div>
+        </fieldset>
+        <label class="mcerl">Título MCERL
+          <select id="mc_${i.id}" data-idi="${i.id}" data-tipo="mcerl">${optsMcerl}</select></label>
+      </div>
+      <p class="idi-res" id="ir_${i.id}">Sin niveles: este idioma no suma.</p>
+    </div>`).join("");
+}
+
+/* ---------- secciones plegables ----------
+   Todas empiezan plegadas: se ve la cabecera, con los puntos y la barra, y el cuerpo se abre al pulsarla. */
+function pintarPlegables(){
+  document.querySelectorAll("main section").forEach(sec => {
+    const h2 = sec.querySelector("h2"), sb = sec.querySelector(".sb");
+    sb.id = sec.id + "-cuerpo";
+    h2.innerHTML = `<button type="button" class="plegar" aria-expanded="false" aria-controls="${sb.id}">${h2.innerHTML}</button>`;
+    sec.querySelector(".sh").addEventListener("click", () => plegar(sec, !sec.classList.contains("plegado")));
+  });
+}
+
+function plegar(sec, si){
+  sec.classList.toggle("plegado", si);
+  sec.querySelector(".plegar").setAttribute("aria-expanded", String(!si));
+}
+
+/* ---------- idiomas ---------- */
+function idioma(i){
+  const s = estado.idi[i.id] || {};
+  const dz = [0, 1, 2, 3].map(n => Array.isArray(s.dz) ? (Number(s.dz[n]) || 0) : 0);
+  const slp = dz.reduce((a, b) => a + b, 0);
+  const mc = Number(s.mcerl) || 0;
+  const base = Math.max(slp, mc);
+  return {dz, slp, mc, base, abs: base * i.k};
+}
+
+function cuentaIdioma(v){
+  if(!v.slp && !v.mc) return "Sin niveles: este idioma no suma.";
+  const titulo = "MCERL " + MCERL_NOMBRE[v.mc];
+  if(!v.mc) return "Cuenta tu perfil SLP.";
+  if(!v.slp) return `Cuenta tu título ${titulo}.`;
+  if(v.slp > v.mc) return `Cuenta el SLP, que puntúa más que el ${titulo}.`;
+  if(v.mc > v.slp) return `Cuenta el ${titulo}, que puntúa más que tu SLP.`;
+  return `El SLP y el ${titulo} puntúan lo mismo.`;
+}
+
+function explicarIdioma(i, v){
+  const sumaSlp = `SLP: ${v.dz.map(corto).join(" + ")} = ${corto(v.slp)}.`;
+  const titulo = v.mc ? `MCERL ${MCERL_NOMBRE[v.mc]}: ${v.mc}.` : "";
+  const calculo = `${corto(v.base)} × ${num(i.k)} = <strong>${num(v.abs)}</strong>`;
+  if(!v.mc) return `${sumaSlp} Con el coeficiente: ${calculo}.`;
+  if(!v.slp) return `${titulo} Con el coeficiente: ${calculo}.`;
+  if(v.slp > v.mc) return `${sumaSlp} ${titulo} Cuenta el SLP por ser mayor: ${calculo}.`;
+  if(v.mc > v.slp) return `${sumaSlp} ${titulo} Cuenta el MCERL por ser mayor: ${calculo}.`;
+  return `${sumaSlp} ${titulo} Valen lo mismo: ${calculo}.`;
+}
+
+/* ---------- medidor de cada mérito ----------
+   La barra va de 0 al máximo de puntos del mérito y la raya marca ese máximo. Cada tramo es un
+   elemento que suma; lo que queda a la derecha de la raya (gris) pasa del umbral y no puntúa.
+   Solo en ese caso lleva texto debajo: lo demás ya lo dice la cabecera («X de N puntos»). */
+const vistos = {};
+function pintarMedidor(k, partes, {tope}){
+  const umbral = UMBRAL[k], baremo = BAREMO[k];
+  const antes = vistos[k] || new Set(), ahora = vistos[k] = new Set();
+  const pieza = (p, v, suma) =>
+    `<i class="pz${suma ? "" : " sobra"}${antes.has(p.id) ? "" : " nuevo"}" style="flex-grow:${v}" title="${p.n}: ${
+      suma ? `+${num(v / umbral * baremo)} puntos` : "lo que pasa del máximo no suma"}"></i>`;
+  let abs = 0, suman = "", sobran = "";
+  partes.filter(p => p.v > 0).forEach(p => {
+    const cuenta = Math.max(0, Math.min(p.v, umbral - abs));
+    if(cuenta > 1e-9) suman += pieza(p, cuenta, true);
+    if(p.v - cuenta > 1e-9) sobran += pieza(p, p.v - cuenta, false);
+    abs += p.v;
+    ahora.add(p.id);
+  });
+  const resto = tope ? "" : `<i class="pz resto" style="flex-grow:${umbral - abs}"></i>`;
+  const pie = sobran ? `<p class="pie">Al máximo: lo que tienes de más ya no suma</p>` : "";
+  const el = document.getElementById("med_" + k);
+  el.classList.toggle("lleno", tope);
+  el.innerHTML = `<div class="pista" aria-hidden="true">${suman}${resto}<b class="marca"></b>${sobran}</div>${pie}`;
+}
+
+/* ---------- cálculo ---------- */
+function calcular(){
+  const r = {};
+  r.a21 = puntos(estado.d21a, UMBRAL.a21, BAREMO.a21);
+  r.b21 = puntos(estado.p21b, UMBRAL.b21, BAREMO.b21);
+  r.c21 = puntos(estado.n21c, UMBRAL.c21, BAREMO.c21);
+  r.d21 = puntos(estado.m21d, UMBRAL.d21, BAREMO.d21);
+
+  let absA = 0;
+  APTITUDES.forEach(a => { if(estado.apt[a.id]) absA += a.v; });
+  r.a22 = puntos(absA, UMBRAL.a22, BAREMO.a22);
+
+  let absB = 0;
+  const cuentasIdi = [];
+  IDIOMAS.forEach(i => {
+    const v = idioma(i);
+    absB += v.abs;
+    document.getElementById("pt_" + i.id).textContent = num(solo(v.abs, UMBRAL.b22, BAREMO.b22));
+    document.getElementById("ir_" + i.id).textContent = cuentaIdioma(v);
+    if(v.base) cuentasIdi.push(`<li>${i.n}. ${explicarIdioma(i, v)}</li>`);
+  });
+  $("#tecIdiomas").innerHTML = cuentasIdi.join("");
+  r.b22 = puntos(absB, UMBRAL.b22, BAREMO.b22);
+
+  let absC = 0;
+  TITULOS.forEach(t => { if(estado.tit[t.id]) absC += t.v; });
+  r.c22 = puntos(absC, UMBRAL.c22, BAREMO.c22);
+
+  r.d22 = puntos(estado.d22d, UMBRAL.d22, BAREMO.d22);
+  r.e22 = puntos(estado.d22e, UMBRAL.e22, BAREMO.e22);
+
+  const circ = Number(estado.cooficial) + Number(estado.circPos) - Number(estado.circNeg);
+  const meritos = SEGMENTOS.reduce((s, g) => s + r[g.k].pts, 0);
+
+  [["p21a","a21"],["p21b","b21"],["p21c","c21"],["p21d","d21"],["p22a","a22"],
+   ["p22b","b22"],["p22c","c22"],["p22d","d22"],["p22e","e22"]].forEach(([id, k]) => {
+    const el = document.getElementById(id);
+    el.textContent = num(r[k].pts);
+    el.classList.toggle("tope", r[k].tope);
+  });
+  $("#pcirc").textContent = (circ >= 0 ? "+" : "−") + num(Math.abs(circ));
+  $("#total").textContent = num(meritos + circ);
+
+  const partes = {
+    a21:[{id:"a21", n:"Días en el empleo", v:estado.d21a}],
+    b21:[{id:"b21", n:"Recompensas y felicitaciones", v:estado.p21b}],
+    c21:[{id:"c21", n:"Nivel académico", v:estado.n21c}],
+    d21:[{id:"d21", n:"Media de los IPECGUCI", v:estado.m21d}],
+    a22:APTITUDES.filter(a => estado.apt[a.id]),
+    b22:IDIOMAS.map(i => ({id:i.id, n:i.n, v:idioma(i).abs})),
+    c22:TITULOS.filter(t => estado.tit[t.id]),
+    d22:[{id:"d22", n:"Días en destinos de la especialidad", v:estado.d22d}],
+    e22:[{id:"e22", n:"Días en destinos con cometidos similares", v:estado.d22e}]
+  };
+  SEGMENTOS.forEach(g => pintarMedidor(g.k, partes[g.k], r[g.k]));
+
+  SEGMENTOS.forEach(g => {
+    const seg = document.getElementById("seg_" + g.k);
+    const pct = (r[g.k].pts / BAREMO[g.k]) * 100;
+    seg.querySelector("i").style.width = pct + "%";
+    seg.classList.toggle("lleno", r[g.k].tope);
+    seg.classList.toggle("vacio", pct < 35);
+    seg.title = `${g.t}: ${num(r[g.k].pts)} de ${num(BAREMO[g.k], 1)} puntos`;
+  });
+
+  guardar();
+}
+
+/* ---------- eventos ---------- */
+function enlazar(){
+  Object.entries(CAMPOS).forEach(([id, clave]) => {
+    const el = document.getElementById(id);
+    const actualizar = () => { estado[clave] = Number(el.value) || 0; calcular(); };
+    el.addEventListener("input", actualizar);
+    el.addEventListener("change", actualizar);
+  });
+
+  /* La fecha de fin de plazo es una sola: se repite en los tres apartados de antigüedad. */
+  const inicios = document.querySelectorAll("input[data-dias]"), fines = document.querySelectorAll("input[data-fin]");
+  const desdeFechas = inp => {
+    if(!inp.value || !estado.fechaFin) return;
+    const dias = Math.max(0, Math.floor((new Date(estado.fechaFin) - new Date(inp.value)) / 86400000));
+    const destino = document.getElementById(inp.dataset.dias);
+    destino.value = dias;
+    destino.dispatchEvent(new Event("input", {bubbles:true}));
+  };
+  inicios.forEach(inp => {
+    inp.addEventListener("input", () => desdeFechas(inp));
+    inp.addEventListener("change", () => desdeFechas(inp));
+  });
+  fines.forEach(fin => {
+    const cambiarFin = () => {
+      estado.fechaFin = fin.value;
+      fines.forEach(f => { if(f !== fin) f.value = fin.value; });
+      inicios.forEach(desdeFechas);
+      guardar();
+    };
+    fin.addEventListener("input", cambiarFin);
+    fin.addEventListener("change", cambiarFin);
+  });
+
+  document.addEventListener("change", e => {
+    const t = e.target;
+    if(t.dataset.apt){ estado.apt[t.dataset.apt] = t.checked; calcular(); }
+    if(t.dataset.tit){ estado.tit[t.dataset.tit] = t.checked; calcular(); }
+    if(t.dataset.idi){
+      const s = estado.idi[t.dataset.idi] = estado.idi[t.dataset.idi] || {};
+      if(!Array.isArray(s.dz)) s.dz = [0, 0, 0, 0];
+      if(t.dataset.dz !== undefined) s.dz[Number(t.dataset.dz)] = Number(t.value) || 0;
+      else s.mcerl = Number(t.value) || 0;
+      calcular();
+    }
+  });
+
+  $("#reset").addEventListener("click", () => {
+    const fecha = estado.fechaFin;
+    Object.assign(estado, estadoInicial(), {fechaFin: fecha});
+    document.querySelectorAll("input[type=checkbox]").forEach(c => { c.checked = false; });
+    document.querySelectorAll("input[type=number]").forEach(c => { c.value = 0; });
+    document.querySelectorAll("select").forEach(s => { s.selectedIndex = 0; });
+    document.querySelectorAll("input[type=date][data-dias]").forEach(d => { d.value = ""; });
+    calcular();
+    aviso("Datos borrados.");
+  });
+}
+
+/* ---------- guardado en este navegador ---------- */
+function guardar(){
+  try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(err){ /* sin almacenamiento */ }
+}
+
+function hayDatos(){
+  return Object.values(CAMPOS).some(k => Number(estado[k])) ||
+    Object.values(estado.apt).some(Boolean) || Object.values(estado.tit).some(Boolean) ||
+    IDIOMAS.some(i => idioma(i).base > 0);
+}
+
+function recuperar(){
+  let datos = null;
+  try{ datos = JSON.parse(localStorage.getItem(CLAVE) || "null"); }catch(err){ datos = null; }
+  if(!datos || typeof datos !== "object") return;
+  Object.keys(estadoInicial()).forEach(k => { if(k in datos) estado[k] = datos[k]; });
+  ["apt", "tit", "idi"].forEach(k => { if(!estado[k] || typeof estado[k] !== "object") estado[k] = {}; });
+
+  Object.entries(CAMPOS).forEach(([id, clave]) => {
+    estado[clave] = Number(estado[clave]) || 0;
+    document.getElementById(id).value = String(estado[clave]);
+  });
+  if(typeof estado.fechaFin !== "string") estado.fechaFin = "";
+  document.querySelectorAll("input[data-fin]").forEach(f => { f.value = estado.fechaFin; });
+  APTITUDES.forEach(a => { document.getElementById("apt_" + a.id).checked = !!estado.apt[a.id]; });
+  TITULOS.forEach(t => { document.getElementById("tit_" + t.id).checked = !!estado.tit[t.id]; });
+  IDIOMAS.forEach(i => {
+    const v = idioma(i);
+    v.dz.forEach((n, k) => { document.getElementById(`dz_${i.id}_${k}`).value = String(n); });
+    document.getElementById("mc_" + i.id).value = String(v.mc);
+  });
+  if(hayDatos()) aviso("Recuperados los datos que introdujiste la última vez.");
+}
+
+let avisoTimer;
+function aviso(txt){
+  $("#estado").textContent = txt;
+  clearTimeout(avisoTimer);
+  avisoTimer = setTimeout(() => { $("#estado").textContent = ""; }, 4000);
+}
+
+pintarBarra();
+pintarAptitudes();
+pintarTitulos();
+pintarIdiomas();
+pintarPlegables();
+enlazar();
+recuperar();
+calcular();
+</script>
+</body>
+</html>
