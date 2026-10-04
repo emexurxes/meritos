@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
 <title>Calculadora de méritos · Ficha 02060410 · Guardia Civil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,7 +101,6 @@ ul.items li:last-child{border-bottom:0}
 ul.items input[type=checkbox]{margin:3px 0 0;width:16px;height:16px;accent-color:var(--verde-texto);flex:none}
 .nom{flex:1 1 auto;min-width:0}
 .nom label{cursor:pointer;display:block}
-.cod{font-size:11.5px;color:var(--apagado);margin-top:1px;word-break:break-word}
 .val{flex:none;text-align:right;line-height:1.25;white-space:nowrap;padding-left:6px}
 .val b{font-family:Archivo,sans-serif;font-size:14px;font-weight:600}
 .val span{display:block;font-size:11px;color:var(--apagado)}
@@ -149,7 +149,7 @@ button.sec{background:transparent;color:var(--tinta);border:1px solid var(--line
 button:hover{background:var(--boton-hover)}
 button.sec:hover{background:var(--sec-hover)}
 .estado{font-size:12px;color:var(--apagado)}
-.aviso{font-size:12px;color:var(--apagado);margin-top:18px;max-width:74ch}
+.aviso{font-size:12px;color:var(--apagado);margin-top:18px;max-width:74ch;text-align:justify;hyphens:auto}
 
 @media (max-width:700px){
   .cab{flex-wrap:nowrap;align-items:center;gap:12px;padding:16px 0 16px}
@@ -289,7 +289,7 @@ button.sec:hover{background:var(--sec-hover)}
       <ul class="items" id="lista22a"></ul>
       <details class="tec">
         <summary>Cómo se calcula</summary>
-        <p>Se suman los valores que la ficha da a cada curso marcado (el que aparece junto a su código). Los grupos con varios códigos son denominaciones equivalentes de la misma aptitud y cuentan una vez. Baremo 25; umbral 7,6. Cada punto de valor son <strong>3,289473</strong> puntos.</p>
+        <p>Se suman los valores que la ficha da a cada curso marcado. Los cursos que la ficha recoge con varios códigos son denominaciones equivalentes de la misma aptitud y cuentan una vez. Baremo 25; umbral 7,6. Cada punto de valor son <strong>3,289473</strong> puntos.</p>
       </details>
     </div>
   </section>
@@ -416,7 +416,7 @@ button.sec:hover{background:var(--sec-hover)}
     <span class="estado" id="estado" role="status"></span>
   </div>
 
-  <p class="aviso">Herramienta de cálculo no oficial, elaborada a partir de la ficha 02060410 de la OG 12/2021 en su versión consolidada de 19 de mayo de 2026 (páginas 293 a 297). Los cursos con varios códigos son denominaciones equivalentes de una misma aptitud y solo puntúan una vez. El artículo 8.a).4º permite que una actividad formativa se valore al 100, 75, 50, 25 o 10 % de su valor según su carga lectiva; esta calculadora aplica siempre el valor íntegro de la ficha. Lo que introduces se guarda solo en este navegador. Comprueba siempre tu historial profesional y la resolución de la convocatoria.</p>
+  <p class="aviso">Herramienta no oficial y orientativa, basada en la ficha 02060410 de la OG 12/2021 (versión de 19/05/2026). Tus datos se guardan solo en este navegador. Comprueba siempre tu historial y la resolución de la convocatoria.</p>
 
 </main>
 
@@ -538,8 +538,7 @@ function pintarBarra(){
 function pintarAptitudes(){
   $("#lista22a").innerHTML = APTITUDES.map(a => `<li>
       <input type="checkbox" id="apt_${a.id}" data-apt="${a.id}">
-      <span class="nom"><label for="apt_${a.id}">${a.n}</label>
-        <span class="cod">${a.c || a.id} · valor en la ficha ${num(a.v)}</span></span>
+      <span class="nom"><label for="apt_${a.id}">${a.n}</label></span>
       <span class="val"><b>${num(solo(a.v, UMBRAL.a22, BAREMO.a22))}</b><span>puntos</span></span>
     </li>`).join("");
 }
@@ -547,8 +546,7 @@ function pintarAptitudes(){
 function pintarTitulos(){
   $("#lista22c").innerHTML = TITULOS.map(t => `<li>
       <input type="checkbox" id="tit_${t.id}" data-tit="${t.id}">
-      <span class="nom"><label for="tit_${t.id}">${t.n}</label>
-        <span class="cod">${t.c} · valor en la ficha ${num(t.v)}</span></span>
+      <span class="nom"><label for="tit_${t.id}">${t.n}</label></span>
       <span class="val"><b>${num(solo(t.v, UMBRAL.c22, BAREMO.c22))}</b><span>puntos</span></span>
     </li>`).join("");
 }
